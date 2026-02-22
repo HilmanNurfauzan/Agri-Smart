@@ -1,25 +1,32 @@
-import { Href, Link } from 'expo-router';
-import { openBrowserAsync, WebBrowserPresentationStyle } from 'expo-web-browser';
-import { type ComponentProps } from 'react';
+import * as WebBrowser from "expo-web-browser";
+import React from "react";
+import { Linking, Text, TouchableOpacity } from "react-native";
 
-type Props = Omit<ComponentProps<typeof Link>, 'href'> & { href: Href & string };
+interface ExternalLinkProps {
+  href: string;
+  children: React.ReactNode;
+}
 
-export function ExternalLink({ href, ...rest }: Props) {
+export function ExternalLink({ href, children }: ExternalLinkProps) {
+  const onPress = async () => {
+    // Try Expo WebBrowser first; fall back to Linking
+    try {
+      const result = await WebBrowser.openBrowserAsync(href);
+      if (result.type === "cancel") {
+        await Linking.openURL(href);
+      }
+    } catch {
+      try {
+        await Linking.openURL(href);
+      } catch {
+        // URL tidak bisa dibuka — abaikan dengan aman
+      }
+    }
+  };
+
   return (
-    <Link
-      target="_blank"
-      {...rest}
-      href={href}
-      onPress={async (event) => {
-        if (process.env.EXPO_OS !== 'web') {
-          // Prevent the default behavior of linking to the default browser on native.
-          event.preventDefault();
-          // Open the link in an in-app browser.
-          await openBrowserAsync(href, {
-            presentationStyle: WebBrowserPresentationStyle.AUTOMATIC,
-          });
-        }
-      }}
-    />
+    <TouchableOpacity onPress={onPress} accessibilityRole="link">
+      <Text style={{ color: "#2563eb" }}>{children}</Text>
+    </TouchableOpacity>
   );
 }

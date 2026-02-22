@@ -7,11 +7,23 @@
     "icon": "./assets/images/icon.png",
     "scheme": "agrismart",
     "userInterfaceStyle": "automatic",
-    "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.agrismart.app",
+      "infoPlist": {
+        "NSCameraUsageDescription": "Agri-Smart membutuhkan akses kamera untuk scan QR dan foto kegiatan.",
+        "NSPhotoLibraryUsageDescription": "Agri-Smart membutuhkan akses galeri untuk melampirkan foto kegiatan."
+      }
     },
     "android": {
+      "package": "com.agrismart.app",
+      "permissions": [
+        "CAMERA",
+        "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE",
+        "INTERNET",
+        "ACCESS_NETWORK_STATE"
+      ],
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
@@ -38,11 +50,20 @@
             "backgroundColor": "#000000"
           }
         }
-      ]
+      ],
+      "expo-sqlite",
+      "expo-secure-store"
     ],
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
-    }
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "829a5428-d8ac-4647-b99b-27f65871de4b"
+      }
+    },
+    "owner": "aksaamhmn"
   }
 }

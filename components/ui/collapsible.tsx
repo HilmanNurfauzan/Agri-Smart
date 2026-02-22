@@ -1,45 +1,43 @@
-import { PropsWithChildren, useState } from 'react';
-import { StyleSheet, TouchableOpacity } from 'react-native';
+import React, { useState, ReactNode } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { IconSymbol } from '@/components/ui/icon-symbol';
-import { Colors } from '@/constants/theme';
-import { useColorScheme } from '@/hooks/use-color-scheme';
+interface CollapsibleProps {
+  title: string;
+  children: ReactNode;
+}
 
-export function Collapsible({ children, title }: PropsWithChildren & { title: string }) {
-  const [isOpen, setIsOpen] = useState(false);
-  const theme = useColorScheme() ?? 'light';
+export function Collapsible({ title, children }: CollapsibleProps) {
+  const [open, setOpen] = useState(true);
 
   return (
-    <ThemedView>
-      <TouchableOpacity
-        style={styles.heading}
-        onPress={() => setIsOpen((value) => !value)}
-        activeOpacity={0.8}>
-        <IconSymbol
-          name="chevron.right"
-          size={18}
-          weight="medium"
-          color={theme === 'light' ? Colors.light.icon : Colors.dark.icon}
-          style={{ transform: [{ rotate: isOpen ? '90deg' : '0deg' }] }}
-        />
-
-        <ThemedText type="defaultSemiBold">{title}</ThemedText>
+    <View style={styles.container}>
+      <TouchableOpacity onPress={() => setOpen(!open)} style={styles.header}>
+        <Text style={styles.title}>{title}</Text>
+        <Text style={styles.chevron}>{open ? '▾' : '▸'}</Text>
       </TouchableOpacity>
-      {isOpen && <ThemedView style={styles.content}>{children}</ThemedView>}
-    </ThemedView>
+      {open ? <View style={styles.content}>{children}</View> : null}
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  heading: {
+  container: {
+    borderWidth: 1,
+    borderColor: '#e5e7eb',
+    borderRadius: 12,
+    backgroundColor: '#fff',
+    marginBottom: 12,
+    overflow: 'hidden',
+  },
+  header: {
+    paddingHorizontal: 16,
+    paddingVertical: 12,
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
+    justifyContent: 'space-between',
+    backgroundColor: '#f9fafb',
   },
-  content: {
-    marginTop: 6,
-    marginLeft: 24,
-  },
+  title: { fontSize: 16, fontWeight: '600', color: '#111827' },
+  chevron: { fontSize: 16, color: '#6b7280' },
+  content: { paddingHorizontal: 16, paddingVertical: 12 },
 });

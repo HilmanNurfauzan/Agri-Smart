@@ -1,0 +1,60 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ════════════════════════════════════════════════════════════
+    // HELPER: Validasi device_id wajib ada, bertipe string, min 6 char
+    // ════════════════════════════════════════════════════════════
+    function hasValidDeviceId() {
+      return request.resource.data.device_id is string
+          && request.resource.data.device_id.size() > 5;
+    }
+
+    // ════════════════════════════════════════════════════════════
+    // KOLEKSI UTAMA — digunakan oleh SyncService
+    // ════════════════════════════════════════════════════════════
+
+    match /log_entries/{docId} {
+      allow read: if true;
+      allow create: if hasValidDeviceId();
+      allow update: if hasValidDeviceId();
+      allow delete: if false;
+    }
+
+    match /diagnosis_records/{docId} {
+      allow read: if true;
+      allow create: if hasValidDeviceId();
+      allow update: if hasValidDeviceId();
+      allow delete: if false;
+    }
+
+    match /harvest_records/{docId} {
+      allow read: if true;
+      allow create: if hasValidDeviceId();
+      allow update: if hasValidDeviceId();
+      allow delete: if false;
+    }
+
+    match /plants/{docId} {
+      allow read: if true;
+      allow create: if hasValidDeviceId();
+      allow update: if hasValidDeviceId();
+      allow delete: if false;
+    }
+
+    match /alerts/{docId} {
+      allow read: if true;
+      allow create: if hasValidDeviceId();
+      allow update: if hasValidDeviceId();
+      allow delete: if false;
+    }
+
+    // ════════════════════════════════════════════════════════════
+    // DEFAULT — tolak semua koleksi lain yang tidak didefinisikan
+    // ════════════════════════════════════════════════════════════
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
